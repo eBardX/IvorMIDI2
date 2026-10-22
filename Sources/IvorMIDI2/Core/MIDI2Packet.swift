@@ -7,6 +7,11 @@
 /// words as its message type requires. Unused words are zero.
 public struct MIDI2Packet {
 
+    // MARK: Public Type Aliases
+
+    /// A 32-bit word of a Universal MIDI Packet.
+    public typealias Word = UInt32
+
     // MARK: Public Initializers
 
     /// Creates a `MIDI2Packet` instance from the provided words, or `nil` if
@@ -14,7 +19,7 @@ public struct MIDI2Packet {
     /// word.
     ///
     /// - Parameter words:  The packet’s 32-bit words, in order.
-    public init?(words: some Collection<UInt32>) {
+    public init?(words: some Collection<Word>) {
         guard let first = words.first,
               words.count == Self.wordCount(forUniversalMIDIPacket: first)
         else { return nil }
@@ -31,18 +36,18 @@ public struct MIDI2Packet {
     // MARK: Public Instance Properties
 
     /// The packet’s first word.
-    public let word0: UInt32
+    public let word0: Word
 
     /// The packet’s second word, or zero if the packet has one word.
-    public let word1: UInt32
+    public let word1: Word
 
     /// The packet’s third word, or zero if the packet has fewer than three
     /// words.
-    public let word2: UInt32
+    public let word2: Word
 
     /// The packet’s fourth word, or zero if the packet has fewer than four
     /// words.
-    public let word3: UInt32
+    public let word3: Word
 }
 
 // MARK: -
@@ -60,7 +65,7 @@ extension MIDI2Packet {
     /// - Parameter word:   The first 32-bit word of the packet.
     ///
     /// - Returns:  The number of words in the packet (1–4).
-    public static func wordCount(forUniversalMIDIPacket word: UInt32) -> Int {
+    public static func wordCount(forUniversalMIDIPacket word: Word) -> Int {
         switch word >> 28 {
         case 0x0,
              0x1,
@@ -90,7 +95,7 @@ extension MIDI2Packet {
     /// The packet’s group, or `nil` if its message type has no group
     /// (utility messages, type 0x0, and UMP stream messages, type 0xF).
     public var group: MIDI2Group? {
-        MIDI2Group(universalMIDIPacket: word0)
+        MIDI2Group(packet: self)
     }
 
     /// The packet’s message type (0x0–0xF).
@@ -104,7 +109,7 @@ extension MIDI2Packet {
     }
 
     /// The packet’s 32-bit words, in order.
-    public var words: [UInt32] {
+    public var words: [Word] {
         Array([word0, word1, word2, word3].prefix(wordCount))
     }
 }

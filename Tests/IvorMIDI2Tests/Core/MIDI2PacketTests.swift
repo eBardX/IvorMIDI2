@@ -51,7 +51,7 @@ extension MIDI2PacketTests {
 
     @Test
     func init_words_arraySlice() {
-        let stream: [UInt32] = [0x25903c7f, 0x40903c00, 0xffff0000]
+        let stream: [MIDI2Packet.Word] = [0x25903c7f, 0x40903c00, 0xffff0000]
 
         #expect(MIDI2Packet(words: stream[1...])?.words == [0x40903c00, 0xffff0000])
     }
@@ -96,7 +96,7 @@ extension MIDI2PacketTests {
         let expected = [1, 1, 1, 2, 2, 4, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4]
 
         for (messageType, wordCount) in expected.enumerated() {
-            let word = UInt32(messageType) << 28
+            let word = MIDI2Packet.Word(messageType) << 28
 
             #expect(MIDI2Packet.wordCount(forUniversalMIDIPacket: word) == wordCount)
         }

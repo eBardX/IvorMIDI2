@@ -81,7 +81,7 @@ extension MIDI2Packet {
         let words = stride(from: 0,
                            to: bytes.count,
                            by: 4).map {
-            bytes[$0..<$0 + 4].reduce(UInt32(0)) { ($0 << 8) | UInt32($1) }
+            bytes[$0..<$0 + 4].reduce(Word(0)) { ($0 << 8) | Word($1) }
         }
 
         self.init(words: words)

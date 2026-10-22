@@ -46,10 +46,10 @@ extension MIDIChannelMessage {
               let dataBytes
         else { return nil }
 
-        let data1 = dataBytes.first.map(UInt32.init) ?? 0
-        let data2 = dataBytes.dropFirst().first.map(UInt32.init) ?? 0
+        let data1 = dataBytes.first.map(MIDI2Packet.Word.init) ?? 0
+        let data2 = dataBytes.dropFirst().first.map(MIDI2Packet.Word.init) ?? 0
 
-        return MIDI2Packet(words: [(0x2 << 28) | (UInt32(groupByte) << 24) | (UInt32(statusByte) << 16)
+        return MIDI2Packet(words: [(0x2 << 28) | (MIDI2Packet.Word(groupByte) << 24) | (MIDI2Packet.Word(statusByte) << 16)
                                    | (data1 << 8) | data2])
     }
 }

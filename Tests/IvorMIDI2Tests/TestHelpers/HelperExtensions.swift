@@ -8,7 +8,7 @@ extension MIDI2GrouplessPacketsConvertible {
 
     // Creates an instance from contiguous words, or returns `nil` if the
     // words do not split into packets or do not encode a valid instance.
-    init?(words: [UInt32]) {
+    init?(words: [MIDI2Packet.Word]) {
         guard let packets = MIDI2Packet.packets(fromWords: words)
         else { return nil }
 
@@ -16,7 +16,7 @@ extension MIDI2GrouplessPacketsConvertible {
     }
 
     // The words of this instance’s packets, in order.
-    func words() -> [UInt32]? {
+    func words() -> [MIDI2Packet.Word]? {
         packets()?.flatMap(\.words)
     }
 }
@@ -27,7 +27,7 @@ extension MIDI2Message {
 
     // Creates a message from contiguous words, or returns `nil` if the words
     // do not split into packets or do not encode a valid message.
-    init?(words: [UInt32]) {
+    init?(words: [MIDI2Packet.Word]) {
         guard let packets = MIDI2Packet.packets(fromWords: words)
         else { return nil }
 
@@ -41,7 +41,7 @@ extension MIDI2Packet {
 
     // Splits contiguous words into packets, or returns `nil` if the last
     // packet is incomplete.
-    static func packets(fromWords words: [UInt32]) -> [MIDI2Packet]? {
+    static func packets(fromWords words: [MIDI2Packet.Word]) -> [MIDI2Packet]? {
         var packets: [MIDI2Packet] = []
         var index = 0
 
@@ -67,7 +67,7 @@ extension MIDI2PacketsConvertible {
 
     // Creates an instance from contiguous words, or returns `nil` if the
     // words do not split into packets or do not encode a valid instance.
-    init?(words: [UInt32]) {
+    init?(words: [MIDI2Packet.Word]) {
         guard let packets = MIDI2Packet.packets(fromWords: words)
         else { return nil }
 
@@ -75,7 +75,7 @@ extension MIDI2PacketsConvertible {
     }
 
     // The words of this instance’s packets in the provided group, in order.
-    func words(group: MIDI2Group = 1) -> [UInt32]? {
+    func words(group: MIDI2Group = 1) -> [MIDI2Packet.Word]? {
         packets(group: group)?.flatMap(\.words)
     }
 }
@@ -86,7 +86,7 @@ extension MIDIChannelMessage {
 
     // Creates a message from a single-word packet with `init?(packet:)`, or
     // returns `nil` if the word does not encode a valid channel message.
-    init?(word: UInt32) {
+    init?(word: MIDI2Packet.Word) {
         guard let packet = MIDI2Packet(words: [word])
         else { return nil }
 

@@ -27,7 +27,7 @@ extension MIDISystemMessage {
     }
 
     private static func _makeDataPackets(_ dataBytes: [UInt8],
-                                         groupField: UInt32) -> [MIDI2Packet]? {
+                                         groupField: MIDI2Packet.Word) -> [MIDI2Packet]? {
         guard dataBytes.last == 0xf7
         else { return nil }
 
@@ -47,12 +47,12 @@ extension MIDISystemMessage {
 
         for (index, chunk) in chunks.enumerated() {
             let bytes = (chunk + Array(repeating: 0,
-                                       count: sysExBytesPerPacket - chunk.count)).map(UInt32.init)
+                                       count: sysExBytesPerPacket - chunk.count)).map(MIDI2Packet.Word.init)
             let status = UInt32(MIDI2Packet.format(ofPacketAt: index,
                                                    count: chunks.count))
 
             guard let packet = MIDI2Packet(words: [(0x3 << 28) | groupField | (status << 20)
-                                                   | (UInt32(chunk.count) << 16) | (bytes[0] << 8) | bytes[1],
+                                                   | (MIDI2Packet.Word(chunk.count) << 16) | (bytes[0] << 8) | bytes[1],
                                                    (bytes[2] << 24) | (bytes[3] << 16) | (bytes[4] << 8) | bytes[5]])
             else { return nil }
 
@@ -160,7 +160,7 @@ extension MIDISystemMessage: MIDI2PacketsConvertible {
         guard let groupByte = group.bytesValue?.first
         else { return nil }
 
-        let groupField = UInt32(groupByte) << 24
+        let groupField = MIDI2Packet.Word(groupByte) << 24
 
         switch self {
         case .eox:
@@ -175,10 +175,10 @@ extension MIDISystemMessage: MIDI2PacketsConvertible {
                   let dataBytes
             else { return nil }
 
-            let data1 = dataBytes.first.map(UInt32.init) ?? 0
-            let data2 = dataBytes.dropFirst().first.map(UInt32.init) ?? 0
+            let data1 = dataBytes.first.map(MIDI2Packet.Word.init) ?? 0
+            let data2 = dataBytes.dropFirst().first.map(MIDI2Packet.Word.init) ?? 0
 
-            return MIDI2Packet(words: [(0x1 << 28) | groupField | (UInt32(statusByte) << 16)
+            return MIDI2Packet(words: [(0x1 << 28) | groupField | (MIDI2Packet.Word(statusByte) << 16)
                                        | (data1 << 8) | data2]).map { [$0] }
         }
     }

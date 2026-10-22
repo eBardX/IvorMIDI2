@@ -20,6 +20,22 @@ public struct MIDI2Group {
         self.uintValue = UInt(Swift.min(Swift.max(Int(clamping: value), 1), 16))
     }
 
+    /// Creates a `MIDI2Group` instance from the group field of a Universal
+    /// MIDI Packet, or `nil` if the packet’s message type has no group
+    /// (utility messages, type 0x0, and UMP stream messages, type 0xF).
+    ///
+    /// - Parameter packet: The packet.
+    public init?(packet: MIDI2Packet) {
+        switch packet.messageType {
+        case 0x0,
+             0xf:
+            return nil
+
+        default:
+            self.uintValue = UInt((packet.word0 >> 24) & 0xf) + 1
+        }
+    }
+
     /// Creates a `MIDI2Group` instance with the provided group number, or
     /// `nil` if the value is not a valid group number.
     ///
@@ -29,22 +45,6 @@ public struct MIDI2Group {
         else { return nil }
 
         self.uintValue = uintValue
-    }
-
-    /// Creates a `MIDI2Group` instance from the group field of a Universal
-    /// MIDI Packet, or `nil` if the packet’s message type has no group
-    /// (utility messages, type 0x0, and UMP stream messages, type 0xF).
-    ///
-    /// - Parameter word:   The first 32-bit word of the packet.
-    public init?(universalMIDIPacket word: UInt32) {
-        switch word >> 28 {
-        case 0x0,
-             0xf:
-            return nil
-
-        default:
-            self.uintValue = UInt((word >> 24) & 0xf) + 1
-        }
     }
 
     // MARK: Public Instance Properties

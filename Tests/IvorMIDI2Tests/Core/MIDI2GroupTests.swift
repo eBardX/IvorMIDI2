@@ -105,6 +105,21 @@ extension MIDI2GroupTests {
     }
 
     @Test
+    func init_packet() throws {
+        let system = try #require(MIDI2Packet(words: [0x10000000]))
+        let channelVoice = try #require(MIDI2Packet(words: [0x25903c7f]))
+        let systemExclusive = try #require(MIDI2Packet(words: [0x3f010100, 0x00000000]))
+        let utility = try #require(MIDI2Packet(words: [0x00000000]))
+        let stream = try #require(MIDI2Packet(words: [0xf0000000, 0x00000000, 0x00000000, 0x00000000]))
+
+        #expect(MIDI2Group(packet: system)?.uintValue == 1)
+        #expect(MIDI2Group(packet: channelVoice)?.uintValue == 6)
+        #expect(MIDI2Group(packet: systemExclusive)?.uintValue == 16)
+        #expect(MIDI2Group(packet: utility) == nil)
+        #expect(MIDI2Group(packet: stream) == nil)
+    }
+
+    @Test
     func init_uintValue() {
         #expect(MIDI2Group(uintValue: 1)?.uintValue == 1)
         #expect(MIDI2Group(uintValue: 16)?.uintValue == 16)
@@ -114,15 +129,6 @@ extension MIDI2GroupTests {
     func init_uintValue_invalid() {
         #expect(MIDI2Group(uintValue: 0) == nil)
         #expect(MIDI2Group(uintValue: 17) == nil)
-    }
-
-    @Test
-    func init_universalMIDIPacket() {
-        #expect(MIDI2Group(universalMIDIPacket: 0x10000000)?.uintValue == 1)       // system
-        #expect(MIDI2Group(universalMIDIPacket: 0x25903c7f)?.uintValue == 6)       // MIDI 1.0 channel voice
-        #expect(MIDI2Group(universalMIDIPacket: 0x3f010100)?.uintValue == 16)      // system exclusive
-        #expect(MIDI2Group(universalMIDIPacket: 0x00000000) == nil)                // utility
-        #expect(MIDI2Group(universalMIDIPacket: 0xf0000000) == nil)                // UMP stream
     }
 
     @Test

@@ -113,8 +113,8 @@ extension MIDI2ChannelMessage {
     // MARK: Private Type Methods
 
     // The bank and index of a registered or assignable controller number.
-    private static func _bankAndIndex(_ number: UInt) -> UInt32 {
-        (UInt32(number >> 7) << 8) | UInt32(number & 0x7f)
+    private static func _bankAndIndex(_ number: UInt) -> MIDI2Packet.Word {
+        (MIDI2Packet.Word(number >> 7) << 8) | MIDI2Packet.Word(number & 0x7f)
     }
 
     // Byte 2 holds a note number, controller index, or bank, and byte 3 a
@@ -124,7 +124,7 @@ extension MIDI2ChannelMessage {
                                      _ channel: MIDIChannel,
                                      _ byte2: UInt8,
                                      _ byte3: UInt8,
-                                     _ data: UInt32) -> Self? {
+                                     _ data: MIDI2Packet.Word) -> Self? {
         let note = MIDIData1Value(clamping: byte2 & 0x7f)
         let number = (UInt(byte2 & 0x7f) << 7) | UInt(byte3 & 0x7f)
 
@@ -185,7 +185,7 @@ extension MIDI2ChannelMessage {
                                          _ channel: MIDIChannel,
                                          _ note: MIDIData1Value,
                                          _ attributeType: UInt8,
-                                         _ data: UInt32) -> Self? {
+                                         _ data: MIDI2Packet.Word) -> Self? {
         let velocity = UInt16(data >> 16)
         let attribute: MIDI2NoteAttribute?
 
@@ -207,7 +207,7 @@ extension MIDI2ChannelMessage {
 
     private static func _makeProgramChange(_ channel: MIDIChannel,
                                            _ optionFlags: UInt8,
-                                           _ data: UInt32) -> Self? {
+                                           _ data: MIDI2Packet.Word) -> Self? {
         guard let program = MIDIProgram(uintValue: UInt((data >> 24) & 0x7f) + 1)
         else { return nil }
 
@@ -223,59 +223,59 @@ extension MIDI2ChannelMessage {
     // MARK: Private Instance Methods
 
     // The status, byte 2, byte 3, and second word of this message.
-    private func _fields() -> (UInt32, UInt32, UInt32)? {
+    private func _fields() -> (UInt32, MIDI2Packet.Word, MIDI2Packet.Word)? {
         switch self {
         case let .assignableController(_, number, value):
             (0x3, Self._bankAndIndex(number.uintValue), value)
 
         case let .assignablePerNoteController(_, note, index, value):
-            (0x1, (UInt32(note.uintValue) << 8) | UInt32(index), value)
+            (0x1, (MIDI2Packet.Word(note.uintValue) << 8) | MIDI2Packet.Word(index), value)
 
         case let .channelPressure(_, pressure):
             (0xd, 0, pressure)
 
         case let .controlChange(_, controller, value):
-            (0xb, UInt32(controller.uintValue) << 8, value)
+            (0xb, MIDI2Packet.Word(controller.uintValue) << 8, value)
 
         case let .noteOff(_, note, velocity, attribute):
             (0x8,
-             (UInt32(note.uintValue) << 8) | UInt32(attribute?.type ?? 0),
-             (UInt32(velocity) << 16) | UInt32(attribute?.data ?? 0))
+             (MIDI2Packet.Word(note.uintValue) << 8) | MIDI2Packet.Word(attribute?.type ?? 0),
+             (MIDI2Packet.Word(velocity) << 16) | MIDI2Packet.Word(attribute?.data ?? 0))
 
         case let .noteOn(_, note, velocity, attribute):
             (0x9,
-             (UInt32(note.uintValue) << 8) | UInt32(attribute?.type ?? 0),
-             (UInt32(velocity) << 16) | UInt32(attribute?.data ?? 0))
+             (MIDI2Packet.Word(note.uintValue) << 8) | MIDI2Packet.Word(attribute?.type ?? 0),
+             (MIDI2Packet.Word(velocity) << 16) | MIDI2Packet.Word(attribute?.data ?? 0))
 
         case let .perNoteManagement(_, note, detach, reset):
-            (0xf, (UInt32(note.uintValue) << 8) | (detach ? 0x02 : 0) | (reset ? 0x01 : 0), 0)
+            (0xf, (MIDI2Packet.Word(note.uintValue) << 8) | (detach ? 0x02 : 0) | (reset ? 0x01 : 0), 0)
 
         case let .perNotePitchBendChange(_, note, value):
-            (0x6, UInt32(note.uintValue) << 8, value)
+            (0x6, MIDI2Packet.Word(note.uintValue) << 8, value)
 
         case let .pitchBendChange(_, value):
             (0xe, 0, value)
 
         case let .polyphonicPressure(_, note, pressure):
-            (0xa, UInt32(note.uintValue) << 8, pressure)
+            (0xa, MIDI2Packet.Word(note.uintValue) << 8, pressure)
 
         case let .programChange(_, program, bank):
             (0xc,
              bank == nil ? 0 : 0x01,
-             (UInt32(program.uintValue - 1) << 24)
-                 | (UInt32(bank?.msb.uintValue ?? 0) << 8) | UInt32(bank?.lsb.uintValue ?? 0))
+             (MIDI2Packet.Word(program.uintValue - 1) << 24)
+                 | (MIDI2Packet.Word(bank?.msb.uintValue ?? 0) << 8) | MIDI2Packet.Word(bank?.lsb.uintValue ?? 0))
 
         case let .registeredController(_, number, value):
             (0x2, Self._bankAndIndex(number.uintValue), value)
 
         case let .registeredPerNoteController(_, note, index, value):
-            (0x0, (UInt32(note.uintValue) << 8) | UInt32(index), value)
+            (0x0, (MIDI2Packet.Word(note.uintValue) << 8) | MIDI2Packet.Word(index), value)
 
         case let .relativeAssignableController(_, number, delta):
-            (0x5, Self._bankAndIndex(number.uintValue), UInt32(bitPattern: delta))
+            (0x5, Self._bankAndIndex(number.uintValue), MIDI2Packet.Word(bitPattern: delta))
 
         case let .relativeRegisteredController(_, number, delta):
-            (0x4, Self._bankAndIndex(number.uintValue), UInt32(bitPattern: delta))
+            (0x4, Self._bankAndIndex(number.uintValue), MIDI2Packet.Word(bitPattern: delta))
         }
     }
 }
@@ -333,7 +333,7 @@ extension MIDI2ChannelMessage: MIDI2PacketsConvertible {
               let (status, bytes23, word1) = _fields()
         else { return nil }
 
-        let word0 = (0x4 << 28) | (UInt32(groupByte) << 24) | (status << 20) | (UInt32(channelByte) << 16) | bytes23
+        let word0 = (0x4 << 28) | (MIDI2Packet.Word(groupByte) << 24) | (status << 20) | (MIDI2Packet.Word(channelByte) << 16) | bytes23
 
         return MIDI2Packet(words: [word0, word1]).map { [$0] }
     }

@@ -59,19 +59,19 @@ extension MIDI2MessageReaderTests {
     @Test
     func read_mixedStream() {
         var reader = MIDI2MessageReader()
-        let words: [UInt32] = [0x00101234,                                     // JR clock
-                               0x25903c7f,                                     // MIDI 1.0 note on
-                               0x45903c00,
-                               0xffff0000,                         // MIDI 2.0 note on
-                               0xd5100000,
-                               0x02faf080,
-                               0x00000000,
-                               0x00000000, // set tempo
-                               0xf0200000,
-                               0x00000000,
-                               0x00000000,
-                               0x00000000, // start of clip
-                               0x15f80000]                                     // timing clock
+        let words: [MIDI2Packet.Word] = [0x00101234,    // JR clock
+                                         0x25903c7f,    // MIDI 1.0 note on
+                                         0x45903c00,
+                                         0xffff0000,    // MIDI 2.0 note on
+                                         0xd5100000,
+                                         0x02faf080,
+                                         0x00000000,
+                                         0x00000000,    // set tempo
+                                         0xf0200000,
+                                         0x00000000,
+                                         0x00000000,
+                                         0x00000000,    // start of clip
+                                         0x15f80000]    // timing clock
 
         #expect(reader.read(words: words) == [.utility(.jrClock(0x1234)),
                                               .midi1ChannelVoice(.noteOn(1, 60, 127), 6),

@@ -45,7 +45,7 @@ public struct MIDI2MessageReader {
     private var exclusivePackets: [MIDI2Group: [MIDI2Packet]] = [:]
 
     // The words of an incomplete packet.
-    private var partialWords: [UInt32] = []
+    private var partialWords: [MIDI2Packet.Word] = []
 
     // The packets of the pending UMP stream message.
     private var streamPackets: [MIDI2Packet]?
@@ -133,7 +133,7 @@ extension MIDI2MessageReader {
     /// - Parameter words:  The words.
     ///
     /// - Returns:  The messages the words complete, in order.
-    public mutating func read(words: some Sequence<UInt32>) -> [MIDI2Message] {
+    public mutating func read(words: some Sequence<MIDI2Packet.Word>) -> [MIDI2Message] {
         partialWords += words
 
         var messages: [MIDI2Message] = []

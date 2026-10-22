@@ -89,7 +89,7 @@ extension MIDI2UtilityMessage: MIDI2GrouplessPacketsConvertible {
     ///
     /// - Returns:  The single packet, or `nil` if a value is out of range.
     public func packets() -> [MIDI2Packet]? {
-        let word: UInt32
+        let word: MIDI2Packet.Word
 
         switch self {
         case let .deltaClockstamp(ticks):
@@ -102,13 +102,13 @@ extension MIDI2UtilityMessage: MIDI2GrouplessPacketsConvertible {
             guard ticks > 0
             else { return nil }
 
-            word = (0x3 << 20) | UInt32(ticks)
+            word = (0x3 << 20) | MIDI2Packet.Word(ticks)
 
         case let .jrClock(time):
-            word = (0x1 << 20) | UInt32(time)
+            word = (0x1 << 20) | MIDI2Packet.Word(time)
 
         case let .jrTimestamp(time):
-            word = (0x2 << 20) | UInt32(time)
+            word = (0x2 << 20) | MIDI2Packet.Word(time)
 
         case .noop:
             word = 0
