@@ -12,6 +12,7 @@ Universal MIDI Packet (UMP) group and message encoding types.
 * [Installation](#installation)
     * [Swift Package Manager](#spm_installation)
 * [Quick Start](#quick_start)
+* [Documentation](#documentation)
 * [Reference Documentation](#reference_documentation)
 * [Credits](#credits)
 * [License](#license)
@@ -50,7 +51,7 @@ To add IvorMIDI2 to a Swift package, add it to the `dependencies` in your
 ```swift
 dependencies: [
     .package(url: "https://github.com/eBardX/IvorMIDI2.git",
-             .upToNextMinor(from: "0.1.0"))
+             .upToNextMinor(from: "0.2.0"))
 ]
 ```
 
@@ -69,10 +70,13 @@ Dependencies…** and enter the repository URL:
 https://github.com/eBardX/IvorMIDI2.git
 ```
 
-IvorMIDI2 depends on [IvorMIDI][ivormidi] and [XestiTools][xestitools];
-the Swift Package Manager resolves them automatically.
+IvorMIDI2 depends on [IvorMIDI][ivormidi] and [XestiTools][xestitools]; the
+Swift Package Manager resolves them automatically.
 
 ## <a name="quick_start">Quick Start</a>
+
+Convert MIDI 1.0 messages to and from Universal MIDI Packets, and read the
+messages of a stream of words:
 
 ```swift
 import IvorMIDI
@@ -99,6 +103,16 @@ reader.read(words: [0x45903c00])                   // []: half a packet
 reader.read(words: [0xffff0000])                   // [.midi2ChannelVoice(.noteOn(1, 60, 65535, nil), 6)]
 ```
 
+For the complete story — packets and groups, the MIDI 2.0 message families,
+and how the reader handles interleaved messages — see the [usage
+guide][guide].
+
+## <a name="documentation">Documentation</a>
+
+* [Using IvorMIDI2][guide] — a guide to using the public API, published as part
+  of the DocC documentation.
+* Every public declaration carries a DocC comment.
+
 ## <a name="reference_documentation">Reference Documentation</a>
 
 Full [reference documentation][refdoc] is available courtesy of [DocC][docc].
@@ -112,6 +126,7 @@ John Gary Pusey (ebardx@gmail.com)
 IvorMIDI2 is available under [the MIT license][license].
 
 [docc]:         https://www.swift.org/documentation/docc/
+[guide]:        https://eBardX.github.io/ivor-packages-docs/documentation/ivormidi2/usingivormidi2
 [ivormidi]:     https://github.com/eBardX/IvorMIDI
 [license]:      https://github.com/eBardX/IvorMIDI2/blob/main/LICENSE.md
 [refdoc]:       https://eBardX.github.io/ivor-packages-docs/documentation/ivormidi2

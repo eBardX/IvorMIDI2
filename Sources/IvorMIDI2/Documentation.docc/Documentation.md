@@ -8,19 +8,21 @@ Universal MIDI Packet (UMP) group and message encoding types.
 
 ## Overview
 
-The IvorMIDI2 framework provides [Universal MIDI Packet][ump] support written in
-Swift, building on the message and data value types of ``IvorMIDI``. A UMP
-group number addresses one of the 16 groups of a packet stream, and a UMP
-packet holds the one to four 32-bit words that its message type requires. The
-channel and system messages of IvorMIDI can be converted to and from MIDI 1.0
-Universal MIDI Packets, as CoreMIDI’s event lists carry them: channel voice
-messages as single-word packets of message type 0x2, system common and
-real-time messages as single-word packets of message type 0x1, and system
-exclusive messages as two-word packets of message type 0x3. The MIDI 2.0
-message families have types of their own: utility messages, MIDI 2.0 channel
-voice messages, System Exclusive 8 messages, Flex Data messages, and UMP stream
-messages. A message reader turns a stream of 32-bit words into messages of
-every family, reassembling those that span several packets.
+The IvorMIDI2 framework provides [Universal MIDI
+Packet](https://midi.org/universal-midi-packet-ump-and-midi-2-0-protocol-specification)
+support written in Swift, building on the message and data value types of
+[IvorMIDI](https://github.com/eBardX/IvorMIDI). A UMP group number addresses
+one of the 16 groups of a packet stream, and a UMP packet holds the one to four
+32-bit words that its message type requires. The channel and system messages
+of IvorMIDI can be converted to and from MIDI 1.0 Universal MIDI Packets, as
+CoreMIDI’s event lists carry them: channel voice messages as single-word
+packets of message type 0x2, system common and real-time messages as
+single-word packets of message type 0x1, and system exclusive messages as
+two-word packets of message type 0x3. The MIDI 2.0 message families have types
+of their own: utility messages, MIDI 2.0 channel voice messages, System
+Exclusive 8 messages, Flex Data messages, and UMP stream messages. A message
+reader turns a stream of 32-bit words into messages of every family,
+reassembling those that span several packets.
 
 ```swift
 import IvorMIDI
@@ -36,6 +38,10 @@ if let received = MIDI2Packet(words: [0x25903c7f]) {
     received.group                                 // 6
 }
 
+// A system exclusive message spans one two-word packet per 6 data bytes.
+let sysEx = MIDISystemMessage.systemExclusive([0x7e, 0x7f, 0x09, 0x01, 0xf7])
+let packets = sysEx.packets()                      // words: [0x30047E7F, 0x09010000]
+
 // Read the messages of a stream of words, in any grouping.
 var reader = MIDI2MessageReader()
 
@@ -43,12 +49,14 @@ reader.read(words: [0x45903c00])                   // []: half a packet
 reader.read(words: [0xffff0000])                   // [.midi2ChannelVoice(.noteOn(1, 60, 65535, nil), 6)]
 ```
 
-Every concrete public type is a `Sendable` value type, so instances can be
-freely shared across tasks and actor boundaries.
-
-[ump]: https://midi.org/universal-midi-packet-ump-and-midi-2-0-protocol-specification
+See <doc:UsingIvorMIDI2> for a full guide to packets, groups, the message
+families, and reading a stream.
 
 ## Topics
+
+### Guides
+
+- <doc:UsingIvorMIDI2>
 
 ### Data values
 
