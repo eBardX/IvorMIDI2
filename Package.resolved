@@ -1,13 +1,13 @@
 {
-  "originHash" : "6850ad5a519e003fbabeec9c498a01acd4be2168f2e157c605ef5499c0c12afa",
+  "originHash" : "5ed4786779e1d57551a61374f0255c9e360fb72d7e6df864c26eb651e79dffb0",
   "pins" : [
     {
       "identity" : "ivormidi",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/eBardX/IvorMIDI.git",
       "state" : {
-        "revision" : "96d85011bff159573a5d366e656e6907f6e6d692",
-        "version" : "0.3.0"
+        "revision" : "cabb680c45d73ecdfc9d6c14f1342a7aa4f130a0",
+        "version" : "0.6.0"
       }
     },
     {
